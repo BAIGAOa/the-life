@@ -1,59 +1,59 @@
 # The Life
 
-一个基于 **Ink** + **ink-kit** 的终端人生模拟游戏。
+A terminal-based life simulation game powered by **Ink** + **ink-kit**.
 
-> 🎮 运行在终端里的文字人生
+> A text-based life that runs in your terminal
 
-## 快速开始
+## Quick Start
 
 ```bash
-# 安装依赖
+# Install dependencies
 npm install
 
-# 启动游戏
+# Start the game
 npm start
 
-# 开发模式（热重载）
+# Development mode (hot reload)
 npm run dev
 ```
 
-## 特性
+## Features
 
-- 🎨 **主题系统** — 内置默认主题，支持切换（按 `T`）
-- 🌍 **多语言** — 中文 / English 切换（按 `L`）
-- ⌨️ **键盘导航** — 全程键盘操作，`↑↓` 选择，`Enter` 确认，`Q` 退出
+- **Theme system** — Built-in default theme, toggle with `T`
+- **Multi-language** — Switch between Chinese / English with `L`
+- **Keyboard navigation** — Full keyboard controls, `↑↓` to select, `Enter` to confirm, `Q` to quit
 
-## 技术栈
+## Tech Stack
 
-- [Ink](https://github.com/vadimdemedes/ink) — 用 React 构建终端 UI
-- [@baigao_h/ink-kit](https://www.npmjs.com/package/@baigao_h/ink-kit) — 屏幕管理、键盘系统、国际化、主题等组件库
+- [Ink](https://github.com/vadimdemedes/ink) — Build terminal UI with React
+- [@baigao_h/ink-kit](https://www.npmjs.com/package/@baigao_h/ink-kit) — Component library for screen management, keyboard system, i18n, themes, etc.
 - TypeScript
-- tsx — TypeScript 执行引擎
+- tsx — TypeScript execution engine
 
-## 项目结构
+## Project Structure
 
 ```
 the-life/
 ├── assets/
-│   ├── languages/     # 国际化语言包
+│   ├── languages/     # i18n language packs
 │   │   ├── zh-CN.json
 │   │   └── en-US.json
-│   └── themes/        # 主题配置
+│   └── themes/        # Theme configurations
 │       └── default.json
 ├── src/
-│   └── index.tsx      # 入口 & 主菜单
+│   └── index.tsx      # Entry point & main menu
 ├── package.json
 └── tsconfig.json
 ```
 
-## 命令
+## Commands
 
-| 命令 | 说明 |
-|------|------|
-| `npm start` | 启动游戏 |
-| `npm run dev` | 开发模式（文件监听） |
-| `npm run build` | TypeScript 编译检查 |
+| Command | Description |
+|---------|-------------|
+| `npm start` | Start the game |
+| `npm run dev` | Development mode (watch mode) |
+| `npm run build` | TypeScript compilation check |
 
-## 许可证
+## License
 
 MIT
