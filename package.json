@@ -1,0 +1,23 @@
+{
+  "name": "the-life",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.tsx",
+    "dev": "tsx watch src/index.tsx",
+    "build": "tsc",
+    "test": "echo \"No tests yet\""
+  },
+  "dependencies": {
+    "@baigao_h/ink-kit": "latest",
+    "ink": "^7.0.1",
+    "react": "^19.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.39",
+    "@types/react": "^19.2.14",
+    "tsx": "^4",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "menu.newGame": "New Game",
+  "menu.continue": "Continue",
+  "menu.settings": "Settings",
+  "menu.quit": "Quit",
+  "menu.hint.navigate": "[↑↓] Select  [Enter] Confirm  [Q] Quit",
+  "menu.hint.theme": "[T] Toggle Theme",
+  "menu.hint.language": "[L] Toggle Language"
+}
