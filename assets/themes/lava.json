@@ -1,0 +1,13 @@
+{
+  "id": "lava",
+  "primaryColor": "red",
+  "secondaryColor": "yellow",
+  "accentColor": "redBright",
+  "textColor": "yellow",
+  "dimColor": "red",
+  "highlightColor": "redBright",
+  "borderColor": "red",
+  "errorColor": "redBright",
+  "successColor": "greenBright",
+  "titleColor": "yellowBright"
+}

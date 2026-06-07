@@ -5,5 +5,13 @@
   "menu.quit": "Quit",
   "menu.hint.navigate": "[↑↓] Select  [Enter] Confirm  [Q] Quit",
   "menu.hint.theme": "[T] Toggle Theme",
-  "menu.hint.language": "[L] Toggle Language"
+  "menu.hint.language": "[L] Toggle Language",
+
+  "settings.title": "Settings",
+  "settings.theme": "Theme",
+  "settings.theme.desc": "Choose color theme",
+  "settings.language": "Language",
+  "settings.language.desc": "Choose display language",
+  "settings.empty": "No settings available",
+  "settings.hint.back": "[ESC] Back  [Enter] Confirm"
 }

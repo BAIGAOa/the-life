@@ -4,7 +4,6 @@ import {
   registerComponent,
   ScenarioManagementProvider,
   CurrentScreen,
-  useScreenSystem,
   KeyboardProvider,
   useKeyboard,
   SelectInput,
@@ -12,8 +11,13 @@ import {
   useTheme,
   LanguageProvider,
   useI18n,
+  gotoScreen,
 } from '@baigao_h/ink-kit';
 import type { Item } from '@baigao_h/ink-kit';
+import { registerSetting } from './base/setting/setting-center.js';
+import type { SelectSetting, SettingEntry } from './base/setting/types.js';
+import { SettingsScreen } from './ui/setting/screen.js';
+import { OptionPickerScreen } from './ui/setting/option-picker.js';
 
 const LOGO_LINES = [
   '  ████████╗██╗  ██╗███████╗    ██╗     ██╗███████╗███████╗',
@@ -29,14 +33,15 @@ interface MenuItemValue {
 }
 
 function Menu() {
-  const { skip } = useScreenSystem();
+  
   const { boundKeyboard } = useKeyboard();
-  const { color } = useTheme();
+  const { color, themeId, themes, setTheme } = useTheme();
   const { t, setLanguage, currentLanguage, getLanguages } = useI18n();
+  
 
   const titleColor = color('titleColor') ?? 'magentaBright';
   const dimColor = color('dimColor') ?? 'gray';
-  const primaryColor = color('primaryColor') ?? 'cyan';
+  
 
   const {rows} = useWindowSize()
 
@@ -55,21 +60,42 @@ function Menu() {
       case 'quit':
         process.exit(0);
         break;
-      // newGame / continue / settings — TBD
+      case 'settings':
+        gotoScreen(SettingsScreen, {});
+        break;
     }
   };
 
   useEffect(() => {
-    const unbind: (() => void)[] = [];
-    unbind.push(boundKeyboard(['q'], () => process.exit(0)));
-    unbind.push(boundKeyboard(['l'], () => {
-      const langs = getLanguages();
-      const idx = langs.indexOf(currentLanguage);
-      const next = langs[(idx + 1) % langs.length];
-      setLanguage(next);
-    }));
-    return () => unbind.forEach(fn => fn());
-  }, [currentLanguage]);
+    const unbind = boundKeyboard(['q'], () => process.exit(0));
+
+    // 注册设置项
+    try {
+      registerSetting({
+        id: 'theme',
+        label: 'settings.theme',
+        description: 'settings.theme.desc',
+        renderer: 'select',
+        options: themes.map((id) => ({ label: id, value: id })),
+        defaultValue: themeId,
+        onAction: (value: string) => setTheme(value),
+      } satisfies SelectSetting);
+    } catch { /* already registered */ }
+
+    try {
+      registerSetting({
+        id: 'language',
+        label: 'settings.language',
+        description: 'settings.language.desc',
+        renderer: 'select',
+        options: getLanguages().map((id) => ({ label: id, value: id })),
+        defaultValue: currentLanguage,
+        onAction: (value: string) => setLanguage(value),
+      } satisfies SelectSetting);
+    } catch { /* already registered */ }
+
+    return () => unbind();
+  }, [currentLanguage, themeId, themes]);
 
   return (
     <Box flexDirection="column" padding={1} alignItems="center" height={rows} justifyContent="center">
@@ -96,12 +122,48 @@ function Menu() {
   );
 }
 registerComponent(Menu, {});
+registerComponent(SettingsScreen, {}, { parent: Menu });
+registerComponent(OptionPickerScreen, { setting: {} as SettingEntry }, { parent: SettingsScreen });
+
+/** 在所有界面生效的全局快捷键 */
+function GlobalKeys() {
+  const { globalKeys } = useKeyboard();
+  const { themes, themeId, setTheme } = useTheme();
+  const { getLanguages, currentLanguage, setLanguage } = useI18n();
+
+  useEffect(() => {
+    globalKeys([
+      {
+        key: 't',
+        operate: () => {
+          const idx = themes.indexOf(themeId);
+          const next = themes[(idx + 1) % themes.length];
+          if (next) setTheme(next);
+        },
+        cover: false,
+      },
+      {
+        key: 'l',
+        operate: () => {
+          const langs = getLanguages();
+          const idx = langs.indexOf(currentLanguage);
+          const next = langs[(idx + 1) % langs.length];
+          if (next) setLanguage(next);
+        },
+        cover: false,
+      },
+    ]);
+  }, [themes, themeId, currentLanguage]);
+
+  return null;
+}
 
 function App() {
   return (
     <ThemeProvider path="./assets/themes" defaultTheme="default">
       <LanguageProvider path="./assets/languages" defaultLanguage="zh-CN" fallbackLanguage="en-US">
         <KeyboardProvider>
+          <GlobalKeys />
           <CurrentScreen />
         </KeyboardProvider>
       </LanguageProvider>

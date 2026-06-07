@@ -1,0 +1,13 @@
+{
+  "id": "nord",
+  "primaryColor": "cyan",
+  "secondaryColor": "blueBright",
+  "accentColor": "white",
+  "textColor": "white",
+  "dimColor": "gray",
+  "highlightColor": "cyanBright",
+  "borderColor": "blue",
+  "errorColor": "red",
+  "successColor": "greenBright",
+  "titleColor": "cyanBright"
+}
