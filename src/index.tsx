@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { Box, Text, render } from 'ink';
+import { Box, Text, render, useWindowSize } from 'ink';
 import {
   registerComponent,
   ScenarioManagementProvider,
@@ -38,6 +38,8 @@ function Menu() {
   const dimColor = color('dimColor') ?? 'gray';
   const primaryColor = color('primaryColor') ?? 'cyan';
 
+  const {rows} = useWindowSize()
+
   const menuItems: Item<MenuItemValue>[] = useMemo(
     () => [
       { label: t('menu.newGame'), value: { action: 'newGame' }, Key: 'newGame' },
@@ -70,7 +72,7 @@ function Menu() {
   }, [currentLanguage]);
 
   return (
-    <Box flexDirection="column" padding={1} alignItems="center">
+    <Box flexDirection="column" padding={1} alignItems="center" height={rows} justifyContent="center">
       {LOGO_LINES.map((line, i) => (
         <Text key={i} color={titleColor} bold>
           {line}
