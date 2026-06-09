@@ -2,23 +2,88 @@ name: CI
 
 on:
   push:
-    branches: ['**']
+    branches: [main]
+    tags:
+      - 'v*'
   pull_request:
-    branches: ['main']
+    branches: [main]
+  release:
+    types: [published]
 
 jobs:
   test:
-    name: Test
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        node-version: [22, 24]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
 
-      - uses: actions/setup-node@v4
+  release:
+    needs: test
+    if: github.event_name == 'release' && github.event.action == 'published'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
+          registry-url: https://registry.npmjs.org
           cache: npm
-
       - run: npm ci
+      - run: npm run build
 
-      - run: npm test
+      # Idempotency check: skip publish if version already exists on npm
+      - name: Check if version exists on npm
+        id: check
+        run: |
+          PKG_NAME=$(node -p "require('./package.json').name")
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if npm view "${PKG_NAME}@${PKG_VERSION}" version 2>/dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Version ${PKG_VERSION} already published, skipping"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "Version ${PKG_VERSION} not published, continuing"
+          fi
+
+      - name: Publish to npm
+        if: steps.check.outputs.exists != 'true'
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  binary:
+    needs: test
+    if: github.event_name == 'release' && github.event.action == 'published'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: the-life-linux-x64
+          - os: macos-latest
+            target: the-life-macos-arm64
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install
+
+      - name: Build binary
+        run: bun build --compile src/index.tsx --outfile=${{ matrix.target }}
+
+      - name: Upload binary to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.target }}

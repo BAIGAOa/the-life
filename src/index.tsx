@@ -18,15 +18,11 @@ import { registerSetting } from './base/setting/setting-center.js';
 import type { SelectSetting, SettingEntry } from './base/setting/types.js';
 import { SettingsScreen } from './ui/setting/screen.js';
 import { OptionPickerScreen } from './ui/setting/option-picker.js';
+import { Logo } from './ui/logo/logo.js';
+import { loadPreference, savePreference } from './base/persistence/config-store.js';
 
-const LOGO_LINES = [
-  '  ████████╗██╗  ██╗███████╗    ██╗     ██╗███████╗███████╗',
-  '  ╚══██╔══╝██║  ██║██╔════╝    ██║     ██║██╔════╝██╔════╝',
-  '     ██║   ███████║█████╗      ██║     ██║█████╗  █████╗  ',
-  '     ██║   ██╔══██║██╔══╝      ██║     ██║██╔══╝  ██╔══╝  ',
-  '     ██║   ██║  ██║███████╗    ███████╗██║██║     ███████╗',
-  '     ╚═╝   ╚═╝  ╚═╝╚══════╝    ╚══════╝╚═╝╚═╝     ╚══════╝',
-];
+const initialTheme = loadPreference('theme', 'default');
+const initialLanguage = loadPreference('language', 'zh-CN');
 
 interface MenuItemValue {
   action: 'newGame' | 'continue' | 'settings' | 'quit';
@@ -37,9 +33,7 @@ function Menu() {
   const { boundKeyboard } = useKeyboard();
   const { color, themeId, themes, setTheme } = useTheme();
   const { t, setLanguage, currentLanguage, getLanguages } = useI18n();
-  
 
-  const titleColor = color('titleColor') ?? 'magentaBright';
   const dimColor = color('dimColor') ?? 'gray';
   
 
@@ -78,7 +72,7 @@ function Menu() {
         renderer: 'select',
         options: themes.map((id) => ({ label: id, value: id })),
         defaultValue: themeId,
-        onAction: (value: string) => setTheme(value),
+        onAction: (value: string) => { setTheme(value); savePreference('theme', value); },
       } satisfies SelectSetting);
     } catch { /* already registered */ }
 
@@ -90,7 +84,7 @@ function Menu() {
         renderer: 'select',
         options: getLanguages().map((id) => ({ label: id, value: id })),
         defaultValue: currentLanguage,
-        onAction: (value: string) => setLanguage(value),
+        onAction: (value: string) => { setLanguage(value); savePreference('language', value); },
       } satisfies SelectSetting);
     } catch { /* already registered */ }
 
@@ -99,11 +93,7 @@ function Menu() {
 
   return (
     <Box flexDirection="column" padding={1} alignItems="center" height={rows} justifyContent="center">
-      {LOGO_LINES.map((line, i) => (
-        <Text key={i} color={titleColor} bold>
-          {line}
-        </Text>
-      ))}
+      <Logo />
 
       <Box marginTop={1} />
 
@@ -138,7 +128,7 @@ function GlobalKeys() {
         operate: () => {
           const idx = themes.indexOf(themeId);
           const next = themes[(idx + 1) % themes.length];
-          if (next) setTheme(next);
+          if (next) { setTheme(next); savePreference('theme', next); }
         },
         cover: false,
       },
@@ -148,7 +138,7 @@ function GlobalKeys() {
           const langs = getLanguages();
           const idx = langs.indexOf(currentLanguage);
           const next = langs[(idx + 1) % langs.length];
-          if (next) setLanguage(next);
+          if (next) { setLanguage(next); savePreference('language', next); }
         },
         cover: false,
       },
@@ -160,8 +150,8 @@ function GlobalKeys() {
 
 function App() {
   return (
-    <ThemeProvider path="./assets/themes" defaultTheme="default">
-      <LanguageProvider path="./assets/languages" defaultLanguage="zh-CN" fallbackLanguage="en-US">
+    <ThemeProvider path="./assets/themes" defaultTheme={initialTheme}>
+      <LanguageProvider path="./assets/languages" defaultLanguage={initialLanguage} fallbackLanguage="en-US">
         <KeyboardProvider>
           <GlobalKeys />
           <CurrentScreen />

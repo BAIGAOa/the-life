@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import type { SelectSetting, MultiSelectSetting } from '../src/base/setting/types.js';
+import type { SelectSetting, MultiSelectSetting } from '../../src/base/setting/types.js';
 
 // 每个测试前重置模块，获得全新的 settings Map
 beforeEach(async () => {
@@ -7,7 +7,7 @@ beforeEach(async () => {
 });
 
 async function freshModule() {
-  return import('../src/base/setting/setting-center.js');
+  return import('../../src/base/setting/setting-center.js');
 }
 
 const selectSetting: SelectSetting = {
