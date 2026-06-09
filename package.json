@@ -1,7 +1,8 @@
 {
   "name": "the-life",
+  "description": "A life simulator running on the terminal",
+  "license": "MIT",
   "version": "0.0.1",
-  "private": true,
   "type": "module",
   "scripts": {
     "start": "tsx src/index.tsx",
