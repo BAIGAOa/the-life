@@ -4,7 +4,7 @@ const settings = new Map<string, SettingEntry>();
 
 export function registerSetting(entry: SettingEntry): void {
   if (settings.has(entry.id)) {
-    throw new Error(`Setting with id "${entry.id}" is already registered.`);
+    return;
   }
   settings.set(entry.id, entry);
 }

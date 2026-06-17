@@ -49,12 +49,13 @@ describe('setting-center', () => {
       expect(getSetting('features')).toEqual(multiSetting);
     });
 
-    it('重复注册相同 id 应该抛出错误', async () => {
-      const { registerSetting } = await freshModule();
+    it('重复注册相同 id 应该静默跳过，不抛错', async () => {
+      const { registerSetting, getSetting } = await freshModule();
       registerSetting(selectSetting);
-      expect(() => registerSetting(selectSetting)).toThrow(
-        'Setting with id "theme" is already registered.',
-      );
+      // 重复注册不应该抛错
+      expect(() => registerSetting(selectSetting)).not.toThrow();
+      // 已注册的值保持不变
+      expect(getSetting('theme')).toEqual(selectSetting);
     });
 
     it('不同 id 互不冲突', async () => {

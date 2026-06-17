@@ -59,11 +59,26 @@ To understand how a specific feature works, inspect `node_modules/@baigao_h/ink-
 - **Test directories** — Tests live under `tests/<subsystem>/`, mirroring the subsystem name. For example, setting tests go in `tests/setting/`.
 - **Test quality** — No happy-path-only tests. Every subsystem's tests must cover: (a) basic functionality, (b) edge cases and boundary conditions, and (c) integration paths between modules where applicable.
 - **TDD (test-driven development)** — Write tests first, then implement. Before adding any new module or feature, start with a failing test that defines the expected behavior. The TDD workflow is detailed in `.reasonix/skills/tdd/` — load it via `/tdd` for the full red-green-refactor loop, mocking guidelines, and deep-module design.
-- **Comments** — No useless or decorative comments. Don't write restatements of what the code already says (e.g. `// define a variable`, `// this is a function`). No ASCII divider/separator comments — they only draw attention without adding meaning. Comments must explain **why** the code does something, not **what** it does. Public API exports (functions, types, classes) must have detailed JSDoc blocks.
+- **Comments** — All comments must be written in English. No useless or decorative comments. Don't write restatements of what the code already says (e.g. `// define a variable`, `// this is a function`). No ASCII divider/separator comments — they only draw attention without adding meaning. Comments must explain **why** the code does something, not **what** it does. Public API exports (functions, types, classes) must have detailed JSDoc blocks.
+- **Long-comment versioning** — Any comment that spans more than 5 lines, whether it's `//` line comments or `/* */` block comments, MUST include a version tag and date at the top of the comment block. The version is taken from `package.json`'s `"version"` field, and the date must be precise to the day (format: `YYYY-MM-DD`). Example:
+  ```
+  // @v0.1.0 2026-06-13
+  // This is a long explanatory comment that
+  // spans more than five lines because the
+  // reasoning behind this approach is
+  // non-obvious and needs documentation...
+  ```
+  or for block comments:
+  ```
+  /*
+   * @v0.1.0 2026-06-13
+   * Longer explanation that goes into detail
+   * about why this approach was chosen over
+   * alternatives, covering trade-offs,
+   * edge cases, and design rationale...
+   */
+  ```
 - **Clarifying requirements** — When a request is vague or underspecified, load the `grill-me` skill (`/grill-me` or `.reasonix/skills/grill-me/SKILL.md`) to systematically interview the user one question at a time until the design is fully understood.
 - **Plan confirmation** — After the planning discussion ends and before writing any code, restate your understanding of the plan, highlight any assumptions, and explicitly ask the user whether adjustments are needed or if your understanding is correct and free of deviations. Do not begin implementing until confirmed.
 - **No over-engineering** — Do exactly what the user asks, nothing more. Never optimize prematurely, extract shared code, add tests, or pull out common hooks/functions without asking first. If you see an opportunity for improvement, surface it to the user for approval — do not act on it unilaterally.
 - **Asset files** — Configuration/data files go under `assets/<type>/`, one directory per type. For example, themes live in `assets/themes/`, languages in `assets/languages/`.
-
-## Notes
-

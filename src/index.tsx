@@ -15,34 +15,40 @@ import {
 } from '@baigao_h/ink-kit';
 import type { Item } from '@baigao_h/ink-kit';
 import { registerSetting } from './base/setting/setting-center.js';
-import type { SelectSetting, SettingEntry } from './base/setting/types.js';
+import type { SettingEntry } from './base/setting/types.js';
 import { SettingsScreen } from './ui/setting/screen.js';
 import { OptionPickerScreen } from './ui/setting/option-picker.js';
 import { Logo } from './ui/logo/logo.js';
+import { GameScreen } from './ui/game/game-screen.js';
+import { PlayerSettingsScreen } from './ui/player-settings/screen.js';
+import Player from './base/game/Player.js';
+import { setCurrentPlayer } from './base/game/player-manager.js';
 import { loadPreference, savePreference } from './base/persistence/config-store.js';
+import KeyboardSet from './ui/input/keyboard-set.js';
 
 const initialTheme = loadPreference('theme', 'default');
 const initialLanguage = loadPreference('language', 'zh-CN');
 
 interface MenuItemValue {
-  action: 'newGame' | 'continue' | 'settings' | 'quit';
+  action: 'newGame' | 'continue' | 'playerSettings' | 'settings' | 'quit';
 }
 
 function Menu() {
-  
+
   const { boundKeyboard } = useKeyboard();
   const { color, themeId, themes, setTheme } = useTheme();
   const { t, setLanguage, currentLanguage, getLanguages } = useI18n();
 
   const dimColor = color('dimColor') ?? 'gray';
-  
 
-  const {rows} = useWindowSize()
+
+  const { rows } = useWindowSize()
 
   const menuItems: Item<MenuItemValue>[] = useMemo(
     () => [
       { label: t('menu.newGame'), value: { action: 'newGame' }, Key: 'newGame' },
       { label: t('menu.continue'), value: { action: 'continue' }, Key: 'continue' },
+      { label: t('menu.playerSettings'), value: { action: 'playerSettings' }, Key: 'playerSettings' },
       { label: t('menu.settings'), value: { action: 'settings' }, Key: 'settings' },
       { label: t('menu.quit'), value: { action: 'quit' }, Key: 'quit' },
     ],
@@ -53,6 +59,14 @@ function Menu() {
     switch (item.value.action) {
       case 'quit':
         process.exit(0);
+      case 'newGame': {
+        const player = new Player('Adventurer');
+        setCurrentPlayer(player);
+        gotoScreen(GameScreen, { player });
+        break;
+      }
+      case 'playerSettings':
+        gotoScreen(PlayerSettingsScreen, {});
         break;
       case 'settings':
         gotoScreen(SettingsScreen, {});
@@ -63,33 +77,47 @@ function Menu() {
   useEffect(() => {
     const unbind = boundKeyboard(['q'], () => process.exit(0));
 
-    // 注册设置项
-    try {
-      registerSetting({
-        id: 'theme',
-        label: 'settings.theme',
-        description: 'settings.theme.desc',
-        renderer: 'select',
-        options: themes.map((id) => ({ label: id, value: id })),
-        defaultValue: themeId,
-        onAction: (value: string) => { setTheme(value); savePreference('theme', value); },
-      } satisfies SelectSetting);
-    } catch { /* already registered */ }
-
-    try {
-      registerSetting({
-        id: 'language',
-        label: 'settings.language',
-        description: 'settings.language.desc',
-        renderer: 'select',
-        options: getLanguages().map((id) => ({ label: id, value: id })),
-        defaultValue: currentLanguage,
-        onAction: (value: string) => { setLanguage(value); savePreference('language', value); },
-      } satisfies SelectSetting);
-    } catch { /* already registered */ }
-
     return () => unbind();
   }, [currentLanguage, themeId, themes]);
+
+  useEffect(() => {
+    registerSetting({
+      id: 'language',
+      label: 'settings.language',
+      description: 'settings.language.desc',
+      options: getLanguages().map((id) =>
+        ({ label: id, value: id })),
+      defaultValue: currentLanguage,
+      onAction: (value) => {
+        setLanguage(value)
+        savePreference('language', value)
+      }
+    })
+
+
+
+    registerSetting({
+      id: 'theme',
+      label: 'settings.theme',
+      description: 'settings.theme.desc',
+      options: themes.map((id) => ({ label: id, value: id })),
+      defaultValue: themeId,
+      onAction: (value: string) => {
+        setTheme(value);
+        savePreference('theme', value);
+      },
+    });
+
+
+
+    registerSetting({
+      id: 'keyboard-set',
+      label: 'settings.keyboard-set',
+      description: 'setting.keyboard-set.desc',
+      component: KeyboardSet
+    })
+
+  }, [])
 
   return (
     <Box flexDirection="column" padding={1} alignItems="center" height={rows} justifyContent="center">
@@ -112,6 +140,8 @@ function Menu() {
   );
 }
 registerComponent(Menu, {});
+registerComponent(GameScreen, { player: {} as Player }, { parent: Menu });
+registerComponent(PlayerSettingsScreen, {}, { parent: Menu });
 registerComponent(SettingsScreen, {}, { parent: Menu });
 registerComponent(OptionPickerScreen, { setting: {} as SettingEntry }, { parent: SettingsScreen });
 

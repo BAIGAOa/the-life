@@ -4,8 +4,21 @@
   "menu.settings": "Settings",
   "menu.quit": "Quit",
   "menu.hint.navigate": "[↑↓] Select  [Enter] Confirm  [Q] Quit",
+  "menu.playerSettings": "Player Settings",
   "menu.hint.theme": "[T] Toggle Theme",
   "menu.hint.language": "[L] Toggle Language",
+
+  "playerSettings.title": "Player Settings",
+  "playerSettings.sidebarTitle": "Attributes",
+  "playerSettings.category.name": "Name",
+  "playerSettings.currentValue": "Current",
+  "playerSettings.empty": "(empty)",
+  "playerSettings.enterValue": "Enter new value...",
+  "playerSettings.saveHint": "Enter to save",
+  "playerSettings.resetHint": "Reset to saved",
+  "playerSettings.noPlayer": "No active game",
+  "playerSettings.noPlayerHint": "Start a new game first.",
+  "playerSettings.back": "Press Esc to return",
 
   "settings.title": "Settings",
   "settings.theme": "Theme",
@@ -13,5 +26,5 @@
   "settings.language": "Language",
   "settings.language.desc": "Choose display language",
   "settings.empty": "No settings available",
-  "settings.hint.back": "[ESC] Back  [Enter] Confirm"
+  "settings.hint.back": "[ESC] Back"
 }
