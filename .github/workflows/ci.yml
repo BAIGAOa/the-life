@@ -124,6 +124,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ matrix.target }}
-          overwrite: true
+          tag_name: ${{ github.event.release.tag_name }}   # 添加 tag
+          overwrite_files: true                            # 修正参数名
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
