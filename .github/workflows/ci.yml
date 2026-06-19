@@ -1,0 +1,129 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [main]
+  release:
+    types: [published]
+
+# 为所有 job 设置全局权限
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        node-version: [22, 24]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+
+  release:
+    needs: test
+    if: github.event_name == 'release' && github.event.action == 'published'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+      # Idempotency check: skip publish if version already exists on npm
+      - name: Check if version exists on npm
+        id: check
+        run: |
+          PKG_NAME=$(node -p "require('./package.json').name")
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if npm view "${PKG_NAME}@${PKG_VERSION}" version 2>/dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Version ${PKG_VERSION} already published, skipping"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "Version ${PKG_VERSION} not published, continuing"
+          fi
+
+      - name: Publish to npm
+        if: steps.check.outputs.exists != 'true'
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  binary:
+    needs: test
+    if: github.event_name == 'release' && github.event.action == 'published'
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        include:
+          # Linux x64
+          - os: ubuntu-latest
+            target: the-life-linux-x64
+            artifact: the-life-linux-x64
+          
+          # Linux ARM64
+          - os: ubuntu-24.04-arm
+            target: the-life-linux-arm64
+            artifact: the-life-linux-arm64
+          
+          # macOS Intel (x64)
+          - os: macos-latest
+            target: the-life-macos-x64
+            artifact: the-life-macos-x64
+          
+          # macOS Apple Silicon (ARM64)
+          - os: macos-latest
+            target: the-life-macos-arm64
+            artifact: the-life-macos-arm64
+          
+          # Windows x64
+          - os: windows-latest
+            target: the-life-win-x64.exe
+            artifact: the-life-win-x64.exe
+          
+          # Windows ARM64
+          - os: windows-latest
+            target: the-life-win-arm64.exe
+            artifact: the-life-win-arm64.exe
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install
+
+      - name: Build binary
+        run: bun build --compile src/index.tsx --outfile=${{ matrix.target }}
+        shell: bash
+
+      - name: Upload binary to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.target }}
+          overwrite: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

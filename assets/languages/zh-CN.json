@@ -1,0 +1,30 @@
+{
+  "menu.newGame": "新的开始",
+  "menu.continue": "继续旅程",
+  "menu.settings": "设置",
+  "menu.quit": "退出游戏",
+  "menu.hint.navigate": "[↑↓] 选择  [Enter] 确认  [Q] 退出",
+  "menu.playerSettings": "角色设置",
+  "menu.hint.theme": "[T] 切换主题",
+  "menu.hint.language": "[L] 切换语言",
+
+  "playerSettings.title": "角色设置",
+  "playerSettings.sidebarTitle": "属性",
+  "playerSettings.category.name": "名称",
+  "playerSettings.currentValue": "当前值",
+  "playerSettings.empty": "(空)",
+  "playerSettings.enterValue": "输入新值...",
+  "playerSettings.saveHint": "按回车保存",
+  "playerSettings.resetHint": "重置为已保存值",
+  "playerSettings.noPlayer": "没有进行中的游戏",
+  "playerSettings.noPlayerHint": "请先开始新游戏。",
+  "playerSettings.back": "按 Esc 返回",
+
+  "settings.title": "设置",
+  "settings.theme": "主题",
+  "settings.theme.desc": "选择界面配色方案",
+  "settings.language": "语言",
+  "settings.language.desc": "选择界面显示语言",
+  "settings.empty": "暂无设置项",
+  "settings.hint.back": "[ESC] 返回"
+}

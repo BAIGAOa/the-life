@@ -1,0 +1,13 @@
+{
+  "id": "light",
+  "primaryColor": "blue",
+  "secondaryColor": "cyan",
+  "accentColor": "magenta",
+  "textColor": "black",
+  "dimColor": "gray",
+  "highlightColor": "blueBright",
+  "borderColor": "gray",
+  "errorColor": "red",
+  "successColor": "green",
+  "titleColor": "magenta"
+}

@@ -1,0 +1,55 @@
+{
+  "name": "the-life",
+  "description": "A life simulator running on the terminal",
+  "author": "BAIGAO",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "bin": {
+    "the-life": "./dist/index.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BAIGAOa/the-life.git"
+  },
+  "main": "dist/index.js",
+  "license": "MIT",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.tsx",
+    "dev": "tsx watch src/index.tsx",
+    "bun": "bun run src/index.tsx",
+    "bun:build": "bun build --compile src/index.tsx --outfile=the-life",
+    "build": "tsc",
+    "watch": "tsc --watch --locale zh-CN",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@baigao_h/ink-kit": "^3.5.1",
+    "ink": "^7.0.1",
+    "react": "^19.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.39",
+    "@types/react": "^19.2.14",
+    "react-devtools-core": "^7.0.1",
+    "tsx": "^4",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.8"
+  },
+  "bugs": {
+    "url": "https://github.com/BAIGAOa/the-life/issues"
+  },
+  "homepage": "https://github.com/BAIGAOa/the-life#readme"
+}

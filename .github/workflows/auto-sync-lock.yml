@@ -1,0 +1,72 @@
+name: Auto-Sync Lock File
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'package.json'
+  workflow_dispatch:
+
+jobs:
+  sync-lockfile:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Run npm install to sync lock file
+        run: npm install
+
+      - name: Check for changes in package-lock.json
+        id: check
+        run: |
+          if ! git diff --quiet -- package-lock.json; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "diff<<EOF" >> $GITHUB_OUTPUT
+            git diff --stat -- package-lock.json >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+            echo "::notice::package-lock.json changed, PR will be created"
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "::notice::package-lock.json is up-to-date"
+          fi
+
+      - name: Create Pull Request
+        id: cpr
+        if: steps.check.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: sync package-lock.json [skip ci]'
+          title: 'Auto-sync: package-lock.json updated'
+          body: |
+            ## Auto-sync Lock File
+
+            `package-lock.json` was out of sync with `package.json`. This PR applies
+            the changes from `npm install`.
+
+            ### Summary
+
+            ${{ steps.check.outputs.diff }}
+
+            ### Note
+
+            This PR was automatically created by GitHub Actions. Review and merge if CI passes.
+          branch: auto-sync/lockfile
+          delete-branch: true
+          labels: automated
+
+      - name: Show PR link
+        if: steps.cpr.outputs.pull-request-url != ''
+        run: |
+          echo "::notice::PR created: ${{ steps.cpr.outputs.pull-request-url }}"

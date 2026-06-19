@@ -1,0 +1,13 @@
+{
+  "id": "forest",
+  "primaryColor": "green",
+  "secondaryColor": "yellow",
+  "accentColor": "cyan",
+  "textColor": "greenBright",
+  "dimColor": "green",
+  "highlightColor": "greenBright",
+  "borderColor": "green",
+  "errorColor": "red",
+  "successColor": "greenBright",
+  "titleColor": "yellow"
+}

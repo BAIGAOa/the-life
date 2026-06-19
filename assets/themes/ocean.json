@@ -1,0 +1,13 @@
+{
+  "id": "ocean",
+  "primaryColor": "cyan",
+  "secondaryColor": "blue",
+  "accentColor": "white",
+  "textColor": "cyanBright",
+  "dimColor": "blue",
+  "highlightColor": "cyanBright",
+  "borderColor": "blue",
+  "errorColor": "red",
+  "successColor": "greenBright",
+  "titleColor": "cyanBright"
+}

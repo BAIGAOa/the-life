@@ -1,0 +1,13 @@
+{
+  "id": "retro",
+  "primaryColor": "yellow",
+  "secondaryColor": "green",
+  "accentColor": "red",
+  "textColor": "greenBright",
+  "dimColor": "green",
+  "highlightColor": "yellowBright",
+  "borderColor": "green",
+  "errorColor": "redBright",
+  "successColor": "greenBright",
+  "titleColor": "yellowBright"
+}
