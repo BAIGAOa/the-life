@@ -4,23 +4,23 @@
   "author": "BAIGAO",
   "types": "./dist/index.d.ts",
   "files": [
-        "dist",
-        "README.md",
-        "LICENSE"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "bin": {
-        "the-life": "./dist/index.js"
+    "the-life": "./dist/index.js"
   },
   "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js"
-        }
-    },
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "repository": {
-        "type": "git",
-        "url": "git+https://github.com/BAIGAOa/the-life.git"
-    },
+    "type": "git",
+    "url": "git+https://github.com/BAIGAOa/the-life.git"
+  },
   "main": "dist/index.js",
   "license": "MIT",
   "version": "0.1.0",
@@ -36,7 +36,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@baigao_h/ink-kit": "^3.2.0",
+    "@baigao_h/ink-kit": "^3.5.1",
     "ink": "^7.0.1",
     "react": "^19.2.4"
   },

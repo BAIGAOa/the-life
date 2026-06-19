@@ -25,6 +25,8 @@ import Player from './base/game/Player.js';
 import { setCurrentPlayer } from './base/game/player-manager.js';
 import { loadPreference, savePreference } from './base/persistence/config-store.js';
 import KeyboardSet from './ui/input/keyboard-set.js';
+import { getAllAction, hasKeys } from './base/keyboard/keyboard-manager.js';
+import { registerAllActions } from './base/actions.js';
 
 const initialTheme = loadPreference('theme', 'default');
 const initialLanguage = loadPreference('language', 'zh-CN');
@@ -32,6 +34,27 @@ const initialLanguage = loadPreference('language', 'zh-CN');
 interface MenuItemValue {
   action: 'newGame' | 'continue' | 'playerSettings' | 'settings' | 'quit';
 }
+
+registerAllActions()
+
+function Action(){
+  const {defineShortcutAction} = useKeyboard()
+  
+  defineShortcutAction(getAllAction()
+    .filter(each => hasKeys(each))
+    .map(each => {
+    return {
+      actionId: each.actionId,
+      action: each.action,
+      keys: each.keys
+    }
+  }))
+  
+  return null
+}
+
+
+
 
 function Menu() {
 
@@ -75,9 +98,11 @@ function Menu() {
   };
 
   useEffect(() => {
-    const unbind = boundKeyboard(['q'], () => process.exit(0));
+    const unbexit = boundKeyboard('exit', {times: 2})
 
-    return () => unbind();
+    return () => {
+      unbexit()
+    };
   }, [currentLanguage, themeId, themes]);
 
   useEffect(() => {
@@ -183,6 +208,7 @@ function App() {
     <ThemeProvider path="./assets/themes" defaultTheme={initialTheme}>
       <LanguageProvider path="./assets/languages" defaultLanguage={initialLanguage} fallbackLanguage="en-US">
         <KeyboardProvider>
+          <Action />
           <GlobalKeys />
           <CurrentScreen />
         </KeyboardProvider>
