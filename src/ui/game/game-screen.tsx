@@ -35,6 +35,7 @@ function GameScreen({ player: _propPlayer }: GameScreenProps) {
   const attrWidth = Math.max(20, Math.floor(columns * 0.3));
   
   return (
+    
     <Box flexDirection="column" height={rows} width="100%" paddingX={1}>
       {/* Top bar: player name */}
       <Box height={1} flexDirection="row" justifyContent="space-between">
