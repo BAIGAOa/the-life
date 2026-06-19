@@ -4,3 +4,4 @@ export interface KeyboardAction extends ShortcutOperationEntry {
   title: string;
   cat: string;
 }
+

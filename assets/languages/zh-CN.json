@@ -25,12 +25,19 @@
   "settings.theme.desc": "选择界面配色方案",
   "settings.language": "语言",
   "settings.language.desc": "选择界面显示语言",
+  "settings.keyboard-set": "键盘设置",
+  "settings.keyboard-set.desc": "自定义快捷键绑定",
   "settings.empty": "暂无设置项",
   "settings.hint.back": "[ESC] 返回",
 
   "keyboard.recording": "⏺ 按任意键绑定...",
   "keyboard.recordedKey": "✓ 已绑定: [{key}]",
+  "keyboard.recordedAndRestart": "✓ 录制完成，重启程序后生效",
   "keyboard.hint": "按 Enter 选择项目后录制新按键",
   "no.bindings": "暂无键位绑定",
-  "not.bound": "未绑定"
+  "not.bound": "未绑定",
+
+  "action.exit": "退出游戏",
+
+  "base": "基础"
 }

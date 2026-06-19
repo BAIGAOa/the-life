@@ -1,3 +1,7 @@
+import { store } from "../persistence/config-store.js";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { homedir } from "node:os";
 import { KeyboardAction } from "./types.js";
 
 const actions = new Map<string, Map<string, KeyboardAction>>()
@@ -12,6 +16,15 @@ export function registerAction(action: KeyboardAction) {
   if(cat.has(action.actionId))return
 
   cat.set(action.actionId, action)
+}
+
+export function modifyActionKeys(actionId: string, category: string, keys: string[]) {
+  const cat = actions.get(category)
+  if (!cat) return
+  const action = cat.get(actionId)
+  if (!action) return
+
+  action.keys = keys
 }
 
 export function getAllAction() {
@@ -41,4 +54,96 @@ export function getActionCategories() {
   }
 
   return result
+}
+
+/**
+ * Persist all registered action keys to disk as a full snapshot
+ * (`Record<actionId, string[]>`). Called after every key rebind.
+ */
+export async function persistShortcutKeySettings() {
+  const snapshot: Record<string, string[]> = {}
+  for (const [, catMap] of actions) {
+    for (const [actionId, action] of catMap) {
+      if (action.keys && action.keys.length > 0) {
+        snapshot[actionId] = action.keys
+      }
+    }
+  }
+  await store.write.obj("shortcutKeys", snapshot)
+}
+
+/**
+ * Synchronously load persisted key overrides from disk and apply them
+ * to the in-memory actions Map.
+ *
+ * Must be called after {@link registerAllActions} and before
+ * `defineShortcutAction` so that shortcuts are registered with the
+ * user-customised keys.
+ */
+export function loadShortcutKeySettings() {
+  const CONFIG_PATH = join(homedir(), '.the-life', 'config.json');
+
+  let raw: string;
+  try {
+    raw = readFileSync(CONFIG_PATH, 'utf-8');
+  } catch {
+    /* File does not exist (first run) — no overrides to apply */
+    return;
+  }
+
+  let data: unknown;
+  try {
+    data = JSON.parse(raw);
+  } catch (cause) {
+    process.stderr.write(
+      `[the-life] Failed to parse config file at ${CONFIG_PATH}: ${String(cause)}\n`
+    );
+    process.exit(1);
+  }
+
+  if (typeof data !== 'object' || data === null) {
+    process.stderr.write(
+      `[the-life] Config file at ${CONFIG_PATH} is not a valid JSON object\n`
+    );
+    process.exit(1);
+  }
+
+  const overrides = (data as Record<string, unknown>)['shortcutKeys'];
+
+  /* No overrides key — first run or never customised */
+  if (overrides === undefined) return;
+
+  if (Array.isArray(overrides)) {
+    /* Legacy format from older versions — skip and overwrite on next persist */
+    process.stderr.write(
+      `[the-life] Config key "shortcutKeys" is in legacy array format; ignoring\n`
+    );
+    return;
+  }
+
+  if (typeof overrides !== 'object' || overrides === null) {
+    process.stderr.write(
+      `[the-life] Config key "shortcutKeys" is not a valid object (expected Record<string, string[]>)\n`
+    );
+    process.exit(1);
+  }
+
+  for (const [actionId, keys] of Object.entries(overrides as Record<string, unknown>)) {
+    if (!Array.isArray(keys) || keys.some(k => typeof k !== 'string')) {
+      process.stderr.write(
+        `[the-life] Invalid key binding for action "${actionId}": expected string[]\n`
+      );
+      process.exit(1);
+    }
+
+    /* Find the category this actionId belongs to and apply the override */
+    for (const catMap of actions.values()) {
+      const action = catMap.get(actionId);
+      if (action) {
+        action.keys = keys as string[];
+        break;
+      }
+    }
+    /* Unknown actionId — silently skip (action may have been removed) */
+  }
 }

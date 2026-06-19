@@ -3,7 +3,7 @@ import type { Tab } from "@baigao_h/ink-kit";
 import { SelectInput } from "@baigao_h/ink-kit";
 import type { Item } from "@baigao_h/ink-kit";
 import type { KeyboardAction } from "../../base/keyboard/types.js";
-import { getActionCategories } from "../../base/keyboard/keyboard-manager.js";
+import { getActionCategories, modifyActionKeys, persistShortcutKeySettings } from "../../base/keyboard/keyboard-manager.js";
 import { Box, Text, useInput, useWindowSize } from "ink";
 import React, { useCallback, useMemo, useState } from "react";
 
@@ -15,21 +15,26 @@ export default function KeyboardSet() {
 
   
   const [recordingId, setRecordingId] = useState<string | null>(null)
+  const recordingCatRef = React.useRef("")
   const [overrides, setOverrides] = useState<Record<string, string[]>>({})
+  const [justRecorded, setJustRecorded] = useState(false)
 
-  // useInput here does nothing except capture keystrokes during recording.
-  // It won't conflict with ink-kit's useInput.
   useInput((input, key) => {
     if (!recordingId) return
     const names = normalizeKeyNames(input, key)
     const keyName = names[names.length - 1]
     if (keyName) {
       setOverrides(prev => ({ ...prev, [recordingId]: [keyName] }))
+      modifyActionKeys(recordingId, recordingCatRef.current, [keyName])
+      persistShortcutKeySettings()
       setRecordingId(null)
+      setJustRecorded(true)
     }
   }, { isActive: recordingId !== null })
 
   const handler = useCallback((item: Item<KeyboardAction>) => {
+    recordingCatRef.current = item.value.cat
+    setJustRecorded(false)
     setRecordingId(item.Key ?? item.value.actionId)
   }, [])
 
@@ -56,14 +61,14 @@ export default function KeyboardSet() {
     () =>
       categories.map((cat) => {
         const items: Item<KeyboardAction>[] = cat.items.map((action) => ({
-          label: action.title,
+          label: t(action.title),
           value: action,
           Key: action.actionId,
         }));
 
         return {
           id: cat.id,
-          label: cat.id,
+          label: t(cat.id),
           content: (
             <SelectInput
               focusId={`keyboard-set-${cat.id}`}
@@ -75,7 +80,7 @@ export default function KeyboardSet() {
           ),
         };
       }),
-    [categories, overrides],
+    [categories, overrides, t],
   );
 
   return (
@@ -102,6 +107,8 @@ export default function KeyboardSet() {
       <Box marginTop={1}>
         {recordingId ? (
           <Text color="yellow">{t("keyboard.recording")}</Text>
+        ) : justRecorded ? (
+          <Text color="green">{t("keyboard.recordedAndRestart")}</Text>
         ) : (
           <Text dimColor>{t("keyboard.hint")}</Text>
         )}

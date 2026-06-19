@@ -25,7 +25,7 @@ import Player from './base/game/Player.js';
 import { setCurrentPlayer } from './base/game/player-manager.js';
 import { loadPreference, savePreference } from './base/persistence/config-store.js';
 import KeyboardSet from './ui/input/keyboard-set.js';
-import { getAllAction, hasKeys } from './base/keyboard/keyboard-manager.js';
+import { getAllAction, hasKeys, loadShortcutKeySettings } from './base/keyboard/keyboard-manager.js';
 import { registerAllActions } from './base/actions.js';
 
 const initialTheme = loadPreference('theme', 'default');
@@ -36,6 +36,7 @@ interface MenuItemValue {
 }
 
 registerAllActions()
+loadShortcutKeySettings()
 
 function Action(){
   const {defineShortcutAction} = useKeyboard()
@@ -138,7 +139,7 @@ function Menu() {
     registerSetting({
       id: 'keyboard-set',
       label: 'settings.keyboard-set',
-      description: 'setting.keyboard-set.desc',
+      description: 'settings.keyboard-set.desc',
       component: KeyboardSet
     })
 

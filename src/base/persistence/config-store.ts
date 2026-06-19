@@ -6,7 +6,7 @@ import { createStorage } from '@baigao_h/ink-kit';
 const CONFIG_DIR = join(homedir(), '.the-life');
 const CONFIG_PATH = join(CONFIG_DIR, 'config.json');
 
-const store = createStorage({ dir: CONFIG_DIR, file: 'config.json' });
+export const store = createStorage({ dir: CONFIG_DIR, file: 'config.json' });
 
 /**
  * Synchronously read a persisted preference value.

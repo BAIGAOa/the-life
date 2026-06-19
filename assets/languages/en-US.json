@@ -25,12 +25,19 @@
   "settings.theme.desc": "Choose color theme",
   "settings.language": "Language",
   "settings.language.desc": "Choose display language",
+  "settings.keyboard-set": "Keyboard Settings",
+  "settings.keyboard-set.desc": "Customize key bindings",
   "settings.empty": "No settings available",
   "settings.hint.back": "[ESC] Back",
 
   "keyboard.recording": "⏺ Press any key to bind...",
   "keyboard.recordedKey": "✓ Bound to: [{key}]",
+  "keyboard.recordedAndRestart": "✓ Recorded. Restart the program to apply changes.",
   "keyboard.hint": "Press Enter on an item to record a new key",
   "no.bindings": "No keybindings available",
-  "not.bound": "Unbound"
+  "not.bound": "Unbound",
+
+  "action.exit": "Exit Game",
+
+  "base": "Basic"
 }
