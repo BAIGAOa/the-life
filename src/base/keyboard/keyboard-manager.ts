@@ -1,4 +1,4 @@
-import { store } from "../persistence/config-store.js";
+import { store, ConfigSchemas } from "../persistence/config-store.js";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { homedir } from "node:os";
@@ -69,7 +69,7 @@ export async function persistShortcutKeySettings() {
       }
     }
   }
-  await store.write.obj("shortcutKeys", snapshot)
+  await store.write.schema("shortcutKeys", snapshot)
 }
 
 /**
@@ -121,26 +121,20 @@ export function loadShortcutKeySettings() {
     return;
   }
 
-  if (typeof overrides !== 'object' || overrides === null) {
+  const parsed = ConfigSchemas.shortcutKeys.safeParse(overrides);
+  if (!parsed.success) {
     process.stderr.write(
-      `[the-life] Config key "shortcutKeys" is not a valid object (expected Record<string, string[]>)\n`
+      `[the-life] Config key "shortcutKeys" is invalid: ${parsed.error.message}\n`
     );
     process.exit(1);
   }
 
-  for (const [actionId, keys] of Object.entries(overrides as Record<string, unknown>)) {
-    if (!Array.isArray(keys) || keys.some(k => typeof k !== 'string')) {
-      process.stderr.write(
-        `[the-life] Invalid key binding for action "${actionId}": expected string[]\n`
-      );
-      process.exit(1);
-    }
-
+  for (const [actionId, keys] of Object.entries(parsed.data)) {
     /* Find the category this actionId belongs to and apply the override */
     for (const catMap of actions.values()) {
       const action = catMap.get(actionId);
       if (action) {
-        action.keys = keys as string[];
+        action.keys = keys;
         break;
       }
     }

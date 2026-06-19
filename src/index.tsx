@@ -23,13 +23,14 @@ import { GameScreen } from './ui/game/game-screen.js';
 import { PlayerSettingsScreen } from './ui/player-settings/screen.js';
 import Player from './base/game/Player.js';
 import { setCurrentPlayer } from './base/game/player-manager.js';
-import { loadPreference, savePreference } from './base/persistence/config-store.js';
+import { loadPreference, savePreference, ConfigSchemas } from './base/persistence/config-store.js';
 import KeyboardSet from './ui/input/keyboard-set.js';
 import { getAllAction, hasKeys, loadShortcutKeySettings } from './base/keyboard/keyboard-manager.js';
 import { registerAllActions } from './base/actions.js';
+import Game from './base/game/Game.js';
 
-const initialTheme = loadPreference('theme', 'default');
-const initialLanguage = loadPreference('language', 'zh-CN');
+const initialTheme = loadPreference('theme', ConfigSchemas.theme, 'default');
+const initialLanguage = loadPreference('language', ConfigSchemas.language, 'zh-CN');
 
 interface MenuItemValue {
   action: 'newGame' | 'continue' | 'playerSettings' | 'settings' | 'quit';
@@ -85,8 +86,9 @@ function Menu() {
         process.exit(0);
       case 'newGame': {
         const player = new Player('Adventurer');
+        const game = new Game(player)
         setCurrentPlayer(player);
-        gotoScreen(GameScreen, { player });
+        gotoScreen(GameScreen, { game });
         break;
       }
       case 'playerSettings':
@@ -166,7 +168,7 @@ function Menu() {
   );
 }
 registerComponent(Menu, {});
-registerComponent(GameScreen, { player: {} as Player }, { parent: Menu });
+registerComponent(GameScreen, { game: {} as Game }, { parent: Menu });
 registerComponent(PlayerSettingsScreen, {}, { parent: Menu });
 registerComponent(SettingsScreen, {}, { parent: Menu });
 registerComponent(OptionPickerScreen, { setting: {} as SettingEntry }, { parent: SettingsScreen });
