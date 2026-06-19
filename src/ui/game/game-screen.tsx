@@ -14,6 +14,8 @@ function GameScreen({ player: _propPlayer }: GameScreenProps) {
   const { back } = useScreenSystem();
   const { boundKeyboard } = useKeyboard();
   const { rows, columns } = useWindowSize();
+  
+
 
   const [events, _setEvents] = useState<EventEntry[]>([
     { id: 1, text: `Welcome, ${player?.name ?? 'Adventurer'}! Your journey begins...` },

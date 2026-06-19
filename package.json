@@ -36,7 +36,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@baigao_h/ink-kit": "^3.5.1",
+    "@baigao_h/ink-kit": "^3.5.2",
     "ink": "^7.0.1",
     "react": "^19.2.4"
   },
