@@ -20,6 +20,7 @@ import { SettingsScreen } from './ui/setting/screen.js';
 import { OptionPickerScreen } from './ui/setting/option-picker.js';
 import { Logo } from './ui/logo/logo.js';
 import { GameScreen } from './ui/game/game-screen.js';
+import { EndScreen } from './ui/game/end-screen.js';
 import Console from './ui/game/console.js';
 import Player from './base/game/Player.js';
 import { loadPreference, savePreference, ConfigSchemas } from './base/persistence/config-store.js';
@@ -159,14 +160,17 @@ function Menu() {
 
       <Box marginTop={1} />
 
-      <Text color={dimColor}>{t('menu.hint.navigate')}</Text>
+      <Text color={dimColor}>{t('menu.hint.navigate', {
+        params: { key: getAllAction().find(a => a.actionId === 'exit')?.keys?.[0]?.toUpperCase() ?? 'Q' }
+      })}</Text>
       <Text color={dimColor}>{t('menu.hint.theme')}</Text>
       <Text color={dimColor}>{t('menu.hint.language')}</Text>
     </Box>
   );
 }
 registerComponent(Menu, {});
-registerComponent(GameScreen, { game: {} as Game }, { parent: Menu }); 
+registerComponent(GameScreen, { game: {} as Game }, { parent: Menu });
+registerComponent(EndScreen, { game: {} as Game }, { parent: Menu });
 registerComponent(Console, { game: {} as Game });
 registerComponent(SettingsScreen, {}, { parent: Menu });
 registerComponent(OptionPickerScreen, { setting: {} as SettingEntry }, { parent: SettingsScreen });

@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import { Box, Text, useWindowSize } from 'ink';
-import { useScreenSystem, useKeyboard, openOverlay, closeOverlay } from '@baigao_h/ink-kit';
+import { useScreenSystem, useKeyboard, openOverlay, closeOverlay, gotoScreen } from '@baigao_h/ink-kit';
 import type { MessageEntry } from '../../base/game/types.js';
 import Game from '../../base/game/Game.js';
 import Console from './console.js';
+import { EndScreen } from './end-screen.js';
 
 export interface GameScreenProps {
   game: Game
@@ -13,14 +14,29 @@ function GameScreen({game}: GameScreenProps) {
   const { back } = useScreenSystem();
   const { boundKeyboard } = useKeyboard();
   const { rows, columns } = useWindowSize();
-  
-  const data = useSyncExternalStore(game.subscribe, game.getSnapshot)
+
+  // Subscribe to game state changes so the component re-renders on notify().
+  // The snapshot (version counter) is discarded — all data is read from `game`.
+  useSyncExternalStore(game.subscribe, game.getSnapshot)
 
   const [isOpenConsole, setOpenConsole] = useState<boolean>(false)
   const isOpenConsoleRef = React.useRef(isOpenConsole)
   isOpenConsoleRef.current = isOpenConsole
 
-  const [events, _setEvents] = useState<MessageEntry[]>(data.initialInformation());
+  const [events, _setEvents] = useState<MessageEntry[]>(game.initialInformation());
+
+  useEffect(() => {
+    _setEvents(prev => [...prev, {
+      id: prev.length + 1,
+      text: game.getCurrentEvent().message(game.player)
+    }])
+  }, [game.currentEvent])
+
+  useEffect(() => {
+    if (game.getCurrentEvent().theEnd) {
+      gotoScreen(EndScreen, { game });
+    }
+  }, [game.currentEvent])
 
   useEffect(() => {
     const unbind = boundKeyboard(['escape'], () => back());
@@ -28,16 +44,22 @@ function GameScreen({game}: GameScreenProps) {
       if(!isOpenConsoleRef.current){
         setOpenConsole(true)
         openOverlay('console', Console, {
-          game: data
+          game
         })
       } else {
         closeOverlay('console')
         setOpenConsole(false)
       }
     })
+    const unBindReturn = boundKeyboard(['return'], () => {
+      game.nextTurn()
+    }, {
+        onlyThis: true
+    })
     return () => {
       unbind()
       unOpenOverlay()
+      unBindReturn()
     };
   }, []);
 
@@ -61,7 +83,7 @@ function GameScreen({game}: GameScreenProps) {
           </Text>
         </Box>
         <Box>
-          <Text color="gray">Turn: 1</Text>
+          <Text color="gray">Turn: {game.currentTurn}</Text>
         </Box>
       </Box>
 

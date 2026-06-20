@@ -6,7 +6,7 @@ export function registerAllActions(){
     actionId: 'exit',
     action: () => process.exit(0),
     title: 'action.exit',
-    keys: ['ctrl+q']
+    keys: ['q']
   })
 }
 

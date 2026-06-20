@@ -18,6 +18,8 @@ export const ConfigSchemas = {
   language: z.string(),
   /** Per-action shortcut key overrides: actionId → key list. */
   shortcutKeys: z.record(z.string(), z.array(z.string())),
+  /** Last vertical position of the Console overlay. */
+  consoleTop: z.number(),
 };
 
 /**

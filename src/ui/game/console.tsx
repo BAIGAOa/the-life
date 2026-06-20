@@ -4,31 +4,57 @@ import { Box, Text, useWindowSize } from "ink";
 import { useI18n, SelectInput, useKeyboard } from "@baigao_h/ink-kit";
 import type { Item } from "@baigao_h/ink-kit";
 import type { Child } from "../../base/content-base/BaseIncident.js";
+import { loadPreference, savePreference, ConfigSchemas } from "../../base/persistence/config-store.js";
 
 interface ChildItemValue {
   child: Child;
 }
 
+interface ConsoleItem extends Item<ChildItemValue> {
+  titleKey: string;
+  descKey: string;
+}
+
+function ConsoleCard({ titleKey, descKey, isSelected }: ConsoleItem & { isSelected: boolean }) {
+  const { t } = useI18n();
+  return (
+    <Box flexDirection="column" paddingY={1} paddingX={1}>
+      <Text bold color={isSelected ? "cyan" : "white"}>
+        {t(titleKey)}
+      </Text>
+      <Text color={isSelected ? "cyanBright" : "gray"} dimColor={!isSelected}>
+        {t(descKey)}
+      </Text>
+    </Box>
+  );
+}
+
 const CONSOLE_HEIGHT = 35;
 
 export default function Console({game}: {game: Game}){
-    const data = useSyncExternalStore(game.subscribe, game.getSnapshot)
+    // Subscribe so the console re-renders when game state changes.
+    useSyncExternalStore(game.subscribe, game.getSnapshot)
     const {t} = useI18n()
     const { boundKeyboard, focusUnregister } = useKeyboard();
     const { rows } = useWindowSize();
 
     const maxTop = Math.max(0, rows - CONSOLE_HEIGHT);
     const initialTop = Math.max(0, Math.floor((rows - CONSOLE_HEIGHT) / 2));
-    const [top, setTop] = useState(initialTop);
+    const [top, setTop] = useState(() => {
+      const saved = loadPreference('consoleTop', ConfigSchemas.consoleTop, initialTop);
+      return Math.max(0, Math.min(maxTop, saved));
+    });
 
-    const children = data.getNextEvent();
+    const children = game.getNextEvent();
 
-    const items: Item<ChildItemValue>[] = useMemo(
+    const items: ConsoleItem[] = useMemo(
       () =>
         children.map((child, i) => ({
           label: t(child.description),
           value: { child },
           Key: `console-child-${i}`,
+          titleKey: child.target.title,
+          descKey: child.target.descKey,
         })),
       [children],
     );
@@ -43,12 +69,20 @@ export default function Console({game}: {game: Game}){
      */
     useEffect(() => {
       const unbindUp = boundKeyboard(['up'], () => {
-        setTop(prev => Math.max(0, prev - 1));
+        setTop(prev => {
+          const next = Math.max(0, prev - 1);
+          savePreference('consoleTop', next);
+          return next;
+        });
       }, {
         focusId: 'console-control'
       });
       const unbindDown = boundKeyboard(['down'], () => {
-        setTop(prev => Math.min(maxTop, prev + 1));
+        setTop(prev => {
+          const next = Math.min(maxTop, prev + 1);
+          savePreference('consoleTop', next);
+          return next;
+        });
       }, {
         focusId: 'console-control'
       });
@@ -74,12 +108,13 @@ export default function Console({game}: {game: Game}){
                   </Text>
                 </Box>
               ) : (
-                  <SelectInput<ChildItemValue>
+                  <SelectInput<ChildItemValue, ConsoleItem>
                   items={items}
                   focusId="console-select"
                   limit={10}
-                  onSelect={() => {
-                    /* Selection logic will be added in a later iteration */
+                  itemComponent={ConsoleCard}
+                  onSelect={(item) => {
+                    game.nextEvent(item.value.child.target.name)
                   }}
                 />
               )}

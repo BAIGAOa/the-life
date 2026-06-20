@@ -6,6 +6,13 @@ export default class Player {
 
   public health = 100
 
+  public strength = 10
+  public dexterity = 10
+  public intelligence = 10
+  public constitution = 10
+  public wisdom = 10
+  public charisma = 10
+
   constructor(name: string) {
     this._name = name;
     emit({ type: 'player:created', payload: { name } });

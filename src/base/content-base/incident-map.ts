@@ -11,6 +11,11 @@ export function registerIncident(incident: BaseIncident) {
 }
 
 
+export function getAllIncidents(): BaseIncident[] {
+    return Array.from(incidentMap.values());
+}
+
+
 export function getIncidentByName(name: string){
     const incident = incidentMap.get(name);
     if(!incident){
