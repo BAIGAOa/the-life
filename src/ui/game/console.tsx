@@ -74,7 +74,6 @@ export default function Console({game}: {game: Game}){
                   </Text>
                 </Box>
               ) : (
-                <Box borderStyle="single" borderColor="gray" paddingX={1}>
                   <SelectInput<ChildItemValue>
                   items={items}
                   focusId="console-select"
@@ -83,7 +82,6 @@ export default function Console({game}: {game: Game}){
                     /* Selection logic will be added in a later iteration */
                   }}
                 />
-                </Box>
               )}
             </Box>
         </Box>

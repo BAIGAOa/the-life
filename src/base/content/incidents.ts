@@ -12,30 +12,35 @@ export function loadContent(){
 
         new FirstCry({
             name: 'first_cry',
+            title: 'events.fisrt',
             children: [],
             theEnd: false
         })
 
         new OpenEyes({
             name: 'open_eyes',
+            title: 'openEyes',
             children: [],
             theEnd: false
         })
 
         new FeelHungry({
             name: 'feel_hungry',
+            title: 'events.feelhungry',
             children: [],
             theEnd: false
         })
 
         new MeetParents({
             name: 'meet_parents',
+            title: 'events.meetparents',
             children: [],
             theEnd: false
         })
 
         new Born({
             name: 'born',
+            title: 'events.born',
             children: [
                 { description: 'incident.born.cry', target: 'first_cry' },
                 { description: 'incident.born.open_eyes', target: 'open_eyes' },

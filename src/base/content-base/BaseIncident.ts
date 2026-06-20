@@ -11,6 +11,7 @@ export const childrenSchema = z.array(z.object({
 
 export const BaseIncidentSchema = z.object({
     name: z.string(),
+    title: z.string(),
     children: childrenSchema,
     theEnd: z.boolean()
 })
@@ -26,6 +27,7 @@ export type Child = {
 
 export default class BaseIncident {
     public name = "No-Name-Incident";
+    public title = 'Event-Key'
 
     public children: Child[] = []
     public theEnd = false;
@@ -42,6 +44,7 @@ export default class BaseIncident {
             };
         })
         this.theEnd = baseIncidentOptions.theEnd;
+        this.title = baseIncidentOptions.title
     }
 
     apply(player: Player) {
