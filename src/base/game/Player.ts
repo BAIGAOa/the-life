@@ -4,6 +4,8 @@ import { emit } from '../event/event-bus.js';
 export default class Player {
   private _name: string;
 
+  public health = 100
+
   constructor(name: string) {
     this._name = name;
     emit({ type: 'player:created', payload: { name } });

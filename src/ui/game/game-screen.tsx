@@ -1,26 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import { Box, Text, useWindowSize } from 'ink';
 import { useScreenSystem, useKeyboard } from '@baigao_h/ink-kit';
-import type Player from '../../base/game/Player.js';
-import type { EventEntry } from '../../base/game/types.js';
+import type { MessageEntry } from '../../base/game/types.js';
 import { usePlayer } from './use-player.js';
+import Game from '../../base/game/Game.js';
 
 export interface GameScreenProps {
-  player?: Player;
+  game: Game
 }
 
-function GameScreen({ player: _propPlayer }: GameScreenProps) {
+function GameScreen({game}: GameScreenProps) {
   const player = usePlayer();
   const { back } = useScreenSystem();
   const { boundKeyboard } = useKeyboard();
   const { rows, columns } = useWindowSize();
   
+  const data = useSyncExternalStore(game.subscribe, game.getSnapshot)
 
-
-  const [events, _setEvents] = useState<EventEntry[]>([
-    { id: 1, text: `Welcome, ${player?.name ?? 'Adventurer'}! Your journey begins...` },
-    {id: 2, text: `You were born.`}
-  ]);
+  const [events, _setEvents] = useState<MessageEntry[]>(data.initialInformation());
 
   useEffect(() => {
     const unbind = boundKeyboard(['escape'], () => back());
@@ -96,6 +93,7 @@ function GameScreen({ player: _propPlayer }: GameScreenProps) {
           </Box>
           <Box flexDirection="column" marginTop={1}>
             <Text color="white">Name: {player?.name ?? '???'}</Text>
+            <Text color="white">Health: {player?.health ?? '???'}</Text>
             <Text color="gray">(more to come...)</Text>
           </Box>
         </Box>

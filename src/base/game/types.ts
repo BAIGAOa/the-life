@@ -1,5 +1,8 @@
-/** 事件日志条目 */
-export interface EventEntry {
+
+
+
+
+export interface MessageEntry {
   id: number;
   text: string;
 }
