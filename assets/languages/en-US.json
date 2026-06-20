@@ -39,5 +39,14 @@
 
   "action.exit": "Exit Game",
 
-  "base": "Basic"
+  "base": "Basic",
+
+  "console.title": "Console",
+  "console.tip": "Nothing is happening right now...",
+  "console.have": "Events await your attention",
+
+  "incident.born.cry": "Cry out loud",
+  "incident.born.open_eyes": "Open your eyes",
+  "incident.born.hungry": "Feel hungry",
+  "incident.born.meet_parents": "Meet your parents"
 }

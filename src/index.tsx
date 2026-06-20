@@ -20,14 +20,14 @@ import { SettingsScreen } from './ui/setting/screen.js';
 import { OptionPickerScreen } from './ui/setting/option-picker.js';
 import { Logo } from './ui/logo/logo.js';
 import { GameScreen } from './ui/game/game-screen.js';
-import { PlayerSettingsScreen } from './ui/player-settings/screen.js';
+import Console from './ui/game/console.js';
 import Player from './base/game/Player.js';
-import { setCurrentPlayer } from './base/game/player-manager.js';
 import { loadPreference, savePreference, ConfigSchemas } from './base/persistence/config-store.js';
 import KeyboardSet from './ui/input/keyboard-set.js';
 import { getAllAction, hasKeys, loadShortcutKeySettings } from './base/keyboard/keyboard-manager.js';
 import { registerAllActions } from './base/actions.js';
 import Game from './base/game/Game.js';
+import { loadContent } from './base/content/incidents.js';
 
 const initialTheme = loadPreference('theme', ConfigSchemas.theme, 'default');
 const initialLanguage = loadPreference('language', ConfigSchemas.language, 'zh-CN');
@@ -38,6 +38,8 @@ interface MenuItemValue {
 
 registerAllActions()
 loadShortcutKeySettings()
+
+loadContent()
 
 function Action(){
   const {defineShortcutAction} = useKeyboard()
@@ -87,13 +89,9 @@ function Menu() {
       case 'newGame': {
         const player = new Player('Adventurer');
         const game = new Game(player)
-        setCurrentPlayer(player);
         gotoScreen(GameScreen, { game });
         break;
       }
-      case 'playerSettings':
-        gotoScreen(PlayerSettingsScreen, {});
-        break;
       case 'settings':
         gotoScreen(SettingsScreen, {});
         break;
@@ -168,8 +166,8 @@ function Menu() {
   );
 }
 registerComponent(Menu, {});
-registerComponent(GameScreen, { game: {} as Game }, { parent: Menu });
-registerComponent(PlayerSettingsScreen, {}, { parent: Menu });
+registerComponent(GameScreen, { game: {} as Game }, { parent: Menu }); 
+registerComponent(Console, { game: {} as Game });
 registerComponent(SettingsScreen, {}, { parent: Menu });
 registerComponent(OptionPickerScreen, { setting: {} as SettingEntry }, { parent: SettingsScreen });
 

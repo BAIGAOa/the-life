@@ -1,27 +1,44 @@
 import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import { Box, Text, useWindowSize } from 'ink';
-import { useScreenSystem, useKeyboard } from '@baigao_h/ink-kit';
+import { useScreenSystem, useKeyboard, openOverlay, closeOverlay } from '@baigao_h/ink-kit';
 import type { MessageEntry } from '../../base/game/types.js';
-import { usePlayer } from './use-player.js';
 import Game from '../../base/game/Game.js';
+import Console from './console.js';
 
 export interface GameScreenProps {
   game: Game
 }
 
 function GameScreen({game}: GameScreenProps) {
-  const player = usePlayer();
   const { back } = useScreenSystem();
   const { boundKeyboard } = useKeyboard();
   const { rows, columns } = useWindowSize();
   
   const data = useSyncExternalStore(game.subscribe, game.getSnapshot)
 
+  const [isOpenConsole, setOpenConsole] = useState<boolean>(false)
+  const isOpenConsoleRef = React.useRef(isOpenConsole)
+  isOpenConsoleRef.current = isOpenConsole
+
   const [events, _setEvents] = useState<MessageEntry[]>(data.initialInformation());
 
   useEffect(() => {
     const unbind = boundKeyboard(['escape'], () => back());
-    return () => unbind();
+    const unOpenOverlay = boundKeyboard(['c'], () => {
+      if(!isOpenConsoleRef.current){
+        setOpenConsole(true)
+        openOverlay('console', Console, {
+          game: data
+        })
+      } else {
+        closeOverlay('console')
+        setOpenConsole(false)
+      }
+    })
+    return () => {
+      unbind()
+      unOpenOverlay()
+    };
   }, []);
 
   // Reserve space for top bar and bottom hint
@@ -40,7 +57,7 @@ function GameScreen({game}: GameScreenProps) {
       <Box height={1} flexDirection="row" justifyContent="space-between">
         <Box>
           <Text bold color="cyan">
-            Player: {player?.name ?? '???'}
+            Player: {game.player?.name ?? '???'}
           </Text>
         </Box>
         <Box>
@@ -92,8 +109,8 @@ function GameScreen({game}: GameScreenProps) {
             </Text>
           </Box>
           <Box flexDirection="column" marginTop={1}>
-            <Text color="white">Name: {player?.name ?? '???'}</Text>
-            <Text color="white">Health: {player?.health ?? '???'}</Text>
+            <Text color="white">Name: {game.player?.name ?? '???'}</Text>
+            <Text color="white">Health: {game.player?.health ?? '???'}</Text>
             <Text color="gray">(more to come...)</Text>
           </Box>
         </Box>

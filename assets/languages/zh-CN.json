@@ -39,5 +39,14 @@
 
   "action.exit": "退出游戏",
 
-  "base": "基础"
+  "base": "基础",
+
+  "console.title": "控制台",
+  "console.tip": "当前无事发生...",
+  "console.have": "有事件等待处理",
+
+  "incident.born.cry": "放声啼哭",
+  "incident.born.open_eyes": "睁开双眼",
+  "incident.born.hungry": "感到饥饿",
+  "incident.born.meet_parents": "见到父母"
 }
